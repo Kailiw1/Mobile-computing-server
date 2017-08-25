@@ -6,7 +6,7 @@
     "license": "daryldaryl",
     "author": "daryldaryl",
     "engines": {
-        "node": ">=6.9.1"
+        "node": "=6.11.0"
     },
     "scripts": {
         "start": "node index.js"
