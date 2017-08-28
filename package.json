@@ -7,11 +7,11 @@
     "author": "daryldaryl",
     "dependencies": {
         "express": "^4.15.4",
-        "neo4j-driver": "*",
-        "cookie-parser":"*",
-        "express-session":"*",
-        "connect-redis":"*",
-        "body-parser":"*"
+        "neo4j-driver@1.2.0": "^*",
+        "cookie-parser": "^*",
+        "express-session": "^*",
+        "connect-redis": "^*",
+        "body-parser": "^*"
     },
     "engines": {
         "node": ">=6.11.0"
