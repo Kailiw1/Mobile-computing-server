@@ -11,7 +11,7 @@ app.get('/', function (req, res) {
 
 app.listen(port);
 
-console.log("Server's running", port);
+console.log("Server is running", port);
 
 // var http = require('http');
 
