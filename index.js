@@ -1,5 +1,7 @@
 var express = require('express');
+var session = require('express-session');
 var cookieParser = require('cookie-parser');
+var redisStore = require('connect-redis')(session);
 var bodyParser = require('body-parser')
 
 
@@ -27,6 +29,48 @@ app.get('/test', function (req, res) {
         password: 'test'
     })
 })
+
+// app.post('/login', function (req, res) {
+//     // console.log(req.sessionID)
+//     // console.log(req.headers)
+//     console.log(req.body)
+//     var password
+//     var user = {
+//         username: req.body.username,
+//         password: req.body.password
+//     }
+
+//     dbop.login(user, function (records) {
+//         if (!records.length)
+//             res.send({
+//                 login: 'wrong'
+//             })
+//         else {
+//             req.session.user = user
+//             res.send({
+//                 login: 'ok'
+//             })
+//         }
+
+//     })
+// });
+// app.post('/register', function (req, res) {
+//     var user = req.body
+
+//     dbop.register(user, function (records) {
+//         if (!records.length)
+//             res.send({
+//                 register: 'username exists'
+//             })
+//         else {
+//             req.session.user = user
+//             res.send({
+//                 register: 'ok'
+//             })
+//         }
+
+//     })
+// })
 
 app.listen(port);
 
