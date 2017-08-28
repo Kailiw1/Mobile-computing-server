@@ -1,8 +1,9 @@
 const neo4j = require('neo4j-driver').v1;
 
-const driver = neo4j.driver('bolt://13.70.155.100:7474/', neo4j.auth.basic('neo4j', 'lilolp1122!!'));
+const driver = neo4j.driver('bolt://13.70.155.100/', neo4j.auth.basic('neo4j', 'lilolp1122!!'));
 
 function Query() {
+
   this.login = function (params, callback) {
     var session = driver.session();
     return session

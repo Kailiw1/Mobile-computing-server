@@ -46,26 +46,30 @@ app.post('/login', function (req, res) {
     // console.log(req.sessionID)
     // console.log(req.headers)
     console.log(req.body)
-    var password
     var user = {
         username: req.body.username,
         password: req.body.password
     }
 
     dbop.login(user, function (records) {
-        if (!records.length)
+        if (!records.length) {
             res.send({
                 login: 'wrong'
             })
+            console.log('send back')
+        }
         else {
-            req.session.user = user
+            // req.session.user = user
+            console.log('sddsds', user)
             res.send({
                 login: 'ok'
             })
+            console.log('send back ok')
         }
 
     })
-});
+})
+
 app.post('/register', function (req, res) {
     var user = req.body
 
