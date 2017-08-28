@@ -72,7 +72,7 @@ app.post('/register', function (req, res) {
     dbop.register(user, function (records) {
         if (!records.length)
             res.send({
-                register: 'username exists'
+                register: 'username exists...'
             })
         else {
             req.session.user = user
