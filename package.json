@@ -6,11 +6,7 @@
     "license": "daryldaryl",
     "author": "daryldaryl",
     "dependencies": {
-        "express": {
-            "version": "4.15.4",
-            "resolved": "https://registry.npmjs.org/express/-/express-4.15.4.tgz",
-            "integrity": "sha1-Ay4iU0ic+PzgJma+yj0R7XotrtE="
-        }
+        "express": "^4.15.4"
     },
     "engines": {
         "node": ">=6.11.0"
