@@ -4,7 +4,7 @@ var app = express();
 var port = process.env.PORT || 1337;
 
 app.get('/', function (req, res) {
-    response.writeHead(200, {"Content-Type": "text/plain"});
+    res.writeHead(200, {"Content-Type": "text/plain"});
     res.send('hello world??');
     res.send('goodbye world.')
 })
