@@ -1,0 +1,14 @@
+{
+    "name": "mobile-computing-server",
+    "description": "test",
+    "version": "0.0.1",
+    "private": true,
+    "license": "daryldaryl",
+    "author": "daryldaryl",
+    "engines": {
+        "node": ">=6.11.0"
+    },
+    "scripts": {
+        "start": "node index.js"
+    }
+}
