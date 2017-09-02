@@ -1,36 +1,112 @@
 var db = require('./neo4j.js')
 var dbop = new db()
-
+var fs = require('fs');
 var http = require('http');
+var request = require('request');
 
 var qs = require('querystring');
 
-var data = {
-    username: 123
-}
+/**
+ * -37.517560   -  -38.426668
+ * 
+ * 
+ * 144.594326    145.506191
+ */
+
+/** 
+ * register users
+ *  
+ * */
+
+// var obj = [];
+// var i = 1
+// while (i < 5000) {
+//     obj.push({ username: "test" + i, password: "test" + i, email: "test" + i + "@hotmail.com" });
+//     i += 1
+// }
 
 
-var content = qs.stringify(data);
+// var json = JSON.stringify(obj);
 
-var options = {
-    hostname: '192.168.1.5',
-    port: 1337,
-    path: '/checkin',
-    method: 'GET',
-    Cookie:'connect.sid=s%3AKR3AwfUOclN6o4x-SBmwgXuAjnR5V0hj.Dk5jsoUM2jBzz%2Fhka8SclJ%2BZl2FAUU%2BhvexCF2RMtUQ; Path=/; HttpOnly'
-};
+// fs.writeFile('users.json', json, 'utf8', function (err, data) {
+//     console.log(data)
+// });
 
-var req = http.request(options, function (res) {
-    console.log('STATUS: ' + res.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(res.headers));
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-    });
-});
 
-req.on('error', function (e) {
-    console.log('problem with request: ' + e.message);
-});
+/**                                                                     
+ * 
+ */
+// fs.readFile('users.json', 'utf8', function readFileCallback(err, data) {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         obj = JSON.parse(data); //now it an object
 
-req.end();
+//         var i = 0, howManyTimes = 1000;
+//         function f() {
+//             var element = obj[i]
+//             element.status = Date.now()
+
+//             dbop.register(element, function (records) {
+//                 if (!records.length)
+//                     console.log('username exists...', element.username)
+//                 else {
+//                     // console.log('ok', element.username)
+//                 }
+
+//             })
+//             i++;
+//             if (i < howManyTimes) {
+//                 setTimeout(f, 30);
+//             }
+//         }
+//         f();
+
+//     }
+// });
+
+
+var lat = (Math.random() * (-38.426668 - -37.517560) + -37.517560)
+var lng = (Math.random() * (145.506191 - 144.594326) + 144.594326)
+var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + ", " + lng + "&rankby=distance&key=AIzaSyAeMJIpr7CVFQ7hPXnlr-p80bEhNcg5VIs";
+
+console.log(lat, lng)
+request.post(
+    url,
+    { json: null },
+    function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            // console.log(body)
+            if (JSON.parse(body).results.length) {
+                element = JSON.parse(body).results[0]
+                console.log(element.name, element.geometry.location, element.vicinity, '\n')
+            } else {
+                console.log('no place found')
+            }
+
+
+        } else {
+            console.log("error -- " + error)
+        }
+    }
+);
+
+// lat = Math.random() * (-38.426668 - -37.517560) + -37.517560
+// lng = Math.random() * (145.506191 - 144.594326) + 144.594326
+
+
+// var element = {
+//     username: 'robot',
+//     password: 'robot',
+//     email: 'robot@hotmail.com'
+// }
+// element.status = Date.now()
+
+// dbop.register(element, function (records) {
+//     if (!records.length)
+//         console.log('username exists...', element.username)
+//     else {
+//         // console.log('ok', element.username)
+//     }
+
+// })

@@ -67,7 +67,8 @@ app.post('/login', function (req, res) {
 
 app.post('/register', function (req, res) {
     var user = req.body
-
+    user.status = Date.now()
+    console.log(user)
     dbop.register(user, function (records) {
         if (!records.length)
             res.send({

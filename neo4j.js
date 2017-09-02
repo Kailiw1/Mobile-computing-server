@@ -29,7 +29,8 @@ function Query() {
       'create (u:User{ \
 	    username:{username}, \
 	    email:{email}, \
-      password:{password}}) \
+      password:{password}, \
+      status : {status}}) \
       return u.username as username',
       params
       )
@@ -39,6 +40,7 @@ function Query() {
       })
       .catch(error => {
         session.close();
+        console.log(error)
         callback([])
       });
   }

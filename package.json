@@ -6,12 +6,13 @@
     "license": "daryldaryl",
     "author": "daryldaryl",
     "dependencies": {
-        "express": "^4.15.4",
-        "neo4j-driver": "^*",
-        "cookie-parser": "^*",
-        "express-session": "^*",
+        "body-parser": "^*",
         "connect-redis": "^*",
-        "body-parser": "^*"
+        "cookie-parser": "^*",
+        "express": "^4.15.4",
+        "express-session": "^*",
+        "neo4j-driver": "^*",
+        "request": "^2.81.0"
     },
     "engines": {
         "node": ">=6.11.0"
