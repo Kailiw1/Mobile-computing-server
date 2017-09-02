@@ -68,7 +68,6 @@ app.post('/login', function (req, res) {
 app.post('/register', function (req, res) {
     var user = req.body
     user.status = Date.now()
-    console.log(user)
     dbop.register(user, function (records) {
         if (!records.length)
             res.send({
@@ -96,7 +95,7 @@ app.post('/checkin_current', function (req, res) {
                 res.send({ checkin: "ok" })
             }
         })
-    }else{
+    } else {
         res.send({ checkin: "wrong" })
     }
 })
@@ -133,10 +132,9 @@ app.post('/checkin', function (req, res) {
 
 app.get('/update', function (req, res) {
 
-    time = Date.now()
     if (req.session.user) {
         console.log(req.session.user.username, 'update...')
-        dbop.update({ time: Date.now(), username: req.session.user.username }, function (records) {
+        dbop.update({ username: req.session.user.username }, function (records) {
             var checkinArray = []
             records.forEach(function (record) {
                 checkinArray.push({
@@ -148,6 +146,10 @@ app.get('/update', function (req, res) {
                 update: checkinArray
             })
             console.log(checkinArray)
+            dbop.updatestatus({ time: Date.now(), username: req.session.user.username }, function (records) {
+                console.log('update status')
+            })
+
         })
     } else {
         res.send({

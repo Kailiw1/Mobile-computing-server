@@ -130,7 +130,24 @@ function Query() {
     var session = driver.session();
     return session
       .run(
-      'match (u:User {username:{username}}) match (t)-[c:CheckIn]->(p) where c.time>u.status return p.lat as lat, p.lng as lng', // set u.status = {time}
+      'match (u:User {username:{username}}) match (t)-[c:Checkin]->(p) where c.time>u.status return p.lat as lat, p.lng as lng ', //
+      params
+      )
+      .then(result => {
+        session.close();
+        callback(result.records)
+      })
+      .catch(error => {
+        session.close();
+        callback([])
+      });
+  }
+  this.updatestatus = function(params,callback){
+    //set u.status = {time}
+    var session = driver.session();
+    return session
+      .run(
+      'match (u:User {username:{username}}) set u.status = {time}', //
       params
       )
       .then(result => {
