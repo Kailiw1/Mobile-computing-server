@@ -3,19 +3,17 @@ var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var redisStore = require('connect-redis')(session);
 var bodyParser = require('body-parser')
+var redis = require("redis");
+
+// Add your cache name and access key.
+var client = redis.createClient(6380, 'mobileRedis.redis.cache.windows.net', { auth_pass: 'IC73+zPPdjNo+qFca9eh9SMX3X+S4tZsHd19scuBEfM=', tls: { servername: 'mobileRedis.redis.cache.windows.net' } });
 
 
 var app = express();
 var db = require('./neo4j.js')
 var dbop = new db()
 
-var store = new redisStore({
-    url: 'mobileRedis.redis.cache.windows.net',
-    port: 6380,
-    password: 'IC73+zPPdjNo+qFca9eh9SMX3X+S4tZsHd19scuBEfM=',
-    ssl: true,
-    abortConnect: false
-})
+var store = new redisStore({ client: client })
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -56,15 +54,12 @@ app.post('/login', function (req, res) {
             res.send({
                 login: 'wrong'
             })
-            console.log('send back')
         }
         else {
-            // req.session.user = user
-            console.log('sddsds', user)
+            req.session.user = user
             res.send({
                 login: 'ok'
             })
-            console.log('send back ok')
         }
 
     })
@@ -87,7 +82,78 @@ app.post('/register', function (req, res) {
 
     })
 })
+app.post('/checkin_current', function (req, res) {
+    var checkin = req.body
+    if (req.session.user) {
+        checkin.username = req.session.user.username
+        checkin.time = Date.now()
+        console.log(checkin)
+        dbop.checkin_current(checkin, function (records) {
+            if (!records.length)
+                res.send({ checkin: "checkin failed" })
+            else {
+                res.send({ checkin: "ok" })
+            }
+        })
+    }else{
+        res.send({ checkin: "wrong" })
+    }
+})
+app.post('/checkin', function (req, res) {
+    var checkin = req.body
+    if (req.session.user) {
+        checkin.username = req.session.user.username
+        checkin.time = Date.now()
+        console.log(checkin)
+        dbop.checkplace(checkin, function (records) {
+            if (!records.length)
+                dbop.checkin_newplace(checkin, function (records) {
+                    if (!records.length)
+                        res.send({ checkin: 'new place failed' })
+                    else {
+                        res.send({ checkin: 'new place ok' })
+                    }
+                })
+            else {
+                dbop.checkin(checkin, function (records) {
+                    if (!records.length)
+                        res.send({ checkin: 'checkin place failed' })
+                    else {
+                        res.send({ checkin: 'checkin place ok' })
+                    }
+                })
+            }
 
+        })
+    } else {
+        res.send({ checkin: "wrong" })
+    }
+})
+
+app.get('/update', function (req, res) {
+
+    time = Date.now()
+    if (req.session.user) {
+        console.log(req.session.user.username, 'update...')
+        dbop.update({ time: Date.now(), username: req.session.user.username }, function (records) {
+            var checkinArray = []
+            records.forEach(function (record) {
+                checkinArray.push({
+                    lat: record.get('lat'),
+                    lng: record.get('lng'),
+                })
+            }, this);
+            res.send({
+                update: checkinArray
+            })
+            console.log(checkinArray)
+        })
+    } else {
+        res.send({
+            update: "wrong"
+        })
+    }
+})
 app.listen(port);
 
 console.log("Server is running", port);

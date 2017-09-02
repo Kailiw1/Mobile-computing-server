@@ -42,6 +42,123 @@ function Query() {
         callback([])
       });
   }
+
+  this.checkplace = function (params, callback) {
+    var session = driver.session();
+    return session
+      .run(
+      'match (u:Place{ \
+	    name:{name}, \
+	    lat:{lat}, \
+      lng:{lng}}) \
+      return u.name as name',
+      params
+      )
+      .then(result => {
+        session.close();
+        callback(result.records)
+      })
+      .catch(error => {
+        session.close();
+        callback([])
+      });
+  }
+  this.checkin_newplace = function (params, callback) {
+    var session = driver.session();
+    return session
+      .run(
+      'match (u:User {username:{username}}) \
+      create (u)- [c:Checkin {time:{time}}]->(p:Place{ \
+	    name:{name}, \
+	    lat:{lat}, \
+      lng:{lng}, \
+      vicinity:{vicinity}}) \
+      return c.time as time',
+      params
+      )
+      .then(result => {
+        session.close();
+        callback(result.records)
+      })
+      .catch(error => {
+        session.close();
+        callback([])
+      });
+  }
+  this.checkin = function (params, callback) {
+    var session = driver.session();
+    return session
+      .run(
+      'match (u:User {username:{username}}) \
+      match (p:Place {name:{name},lat:{lat},lng:{lng}}) \
+      create (u)- [c:Checkin {time:{time}}]->(p) \
+      return c.time as time',
+      params
+      )
+      .then(result => {
+        session.close();
+        callback(result.records)
+      })
+      .catch(error => {
+        session.close();
+        callback([])
+      });
+  }
+
+  this.checkin_current = function (params, callback) {
+    var session = driver.session();
+    return session
+      .run(
+      'match (u:User {username:{username}}) \
+      create (u)- [c:Checkin {time:{time}}]->(p:Place {name:{name},lat:{lat},lng:{lng}}) \
+      return c.time as time',
+      params
+      )
+      .then(result => {
+        session.close();
+        callback(result.records)
+      })
+      .catch(error => {
+        session.close();
+        callback([])
+      });
+  }
+
+  this.update = function (params, callback) {
+    var session = driver.session();
+    return session
+      .run(
+      'match (u:User {username:{username}}) match (t)-[c:CheckIn]->(p) where c.time>u.status return p.lat as lat, p.lng as lng', // set u.status = {time}
+      params
+      )
+      .then(result => {
+        session.close();
+        callback(result.records)
+      })
+      .catch(error => {
+        session.close();
+        callback([])
+      });
+  }
+  this.dev = function (params, callback) {
+    var session = driver.session();
+    return session
+      .run(
+      // 'match (u:User {username:"admin"}) set u.status = {time}',
+      'match (u:Place ) where ID(u)=2 \
+       match (q:User {username:"admin"}) \
+      create (q)-[v:CheckIn {time: {time}}]->(u)',
+      params
+      )
+      .then(result => {
+        session.close();
+        callback(result.records)
+      })
+      .catch(error => {
+        session.close();
+        callback([])
+      });
+  }
 }
 
 
