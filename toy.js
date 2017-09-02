@@ -66,6 +66,40 @@ var qs = require('querystring');
 // });
 
 
+
+// function randomcheckin(checkin) {
+//     checkin.user = { username: 'robot', password: 'robot' }
+//     checkin.status = Date.now()
+
+//     dbop.checkplace(checkin, function (records) {
+//         if (!records.length)
+//             dbop.checkin_newplace(checkin, function (records) {
+//                 if (!records.length)
+//                     res.send({ checkin: 'new place failed' })
+//                 else {
+//                     res.send({ checkin: 'new place ok' })
+//                 }
+//             })
+//         else {
+//             dbop.checkin(checkin, function (records) {
+//                 if (!records.length)
+//                     res.send({ checkin: 'checkin place failed' })
+//                 else {
+//                     res.send({ checkin: 'checkin place ok' })
+//                 }
+//             })
+//         }
+
+//     })
+
+//     i++;
+//     if (i < howManyTimes) {
+//         setTimeout(randomcheckin, 30);
+//     }
+// }
+
+// randomcheckin();
+
 var lat = (Math.random() * (-38.426668 - -37.517560) + -37.517560)
 var lng = (Math.random() * (145.506191 - 144.594326) + 144.594326)
 var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + ", " + lng + "&rankby=distance&key=AIzaSyAeMJIpr7CVFQ7hPXnlr-p80bEhNcg5VIs";
@@ -78,8 +112,41 @@ request.post(
         if (!error && response.statusCode == 200) {
             // console.log(body)
             if (JSON.parse(body).results.length) {
-                element = JSON.parse(body).results[0]
-                console.log(element.name, element.geometry.location, element.vicinity, '\n')
+                var place = JSON.parse(body).results[0]
+                // console.log(place.name, place.geometry.location, place.vicinity, '\n')
+
+                var checkin = {
+                    name: place.name,
+                    lat: place.geometry.location.lat,
+                    lng: place.geometry.location.lng,
+                    vicinity: place.vicinity
+                }
+                checkin.username = 'robot'
+                checkin.time = Date.now()
+
+                console.log(checkin.name)
+
+                dbop.checkplace(checkin, function (records) {
+                    if (!records.length)
+                        dbop.checkin_newplace(checkin, function (records) {
+                            if (!records.length)
+                                console.log('new place failed')
+                            else {
+                                console.log('new place ok')
+                            }
+                        })
+                    else {
+                        dbop.checkin(checkin, function (records) {
+                            if (!records.length)
+                                console.log('checkin place failed')
+                            else {
+                                console.log('checkin place ok')
+                            }
+                        })
+                    }
+
+                })
+
             } else {
                 console.log('no place found')
             }
@@ -90,9 +157,6 @@ request.post(
         }
     }
 );
-
-// lat = Math.random() * (-38.426668 - -37.517560) + -37.517560
-// lng = Math.random() * (145.506191 - 144.594326) + 144.594326
 
 
 // var element = {
