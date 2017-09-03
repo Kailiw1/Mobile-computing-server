@@ -19,14 +19,25 @@ var place = {
 /**
  * login 
  */
-dbop.checkplace(place, function (records) {
-  console.log(records)
-  if (!records.length)
-    console.log('0 result')
+// dbop.checkplace(place, function (records) {
+//   console.log(records)
+//   if (!records.length)
+//     console.log('0 result')
 
-  records.forEach(function (record) {
-    console.log(record);
-  });
-})
+//   records.forEach(function (record) {
+//     console.log(record);
+//   });
+// })
 
 
+var registrationTokens = [];
+
+registrationTokens.push('aaa')
+registrationTokens.push('bbb')
+registrationTokens.push('ccc')
+
+var index = registrationTokens.indexOf('bbb')
+if (index > -1) {
+  registrationTokens.splice(index, 1);
+}
+console.log(registrationTokens)

@@ -132,6 +132,32 @@ request.post(
                             if (!records.length)
                                 console.log('new place failed')
                             else {
+                                console.log('push message')
+                                // See the "Defining the message payload" section below for details
+                                // on how to define a message payload.
+                                // var payload = {
+                                //     data: {
+                                //         lat: checkin.lat,
+                                //         lng: checkin.lng
+                                //     }
+                                // };
+                                var payload = {
+                                    data: {
+                                        score: "850",
+                                        time: "2:45"
+                                    }
+                                };
+                                // Send a message to the devices corresponding to the provided
+                                // registration tokens.
+                                admin.messaging().sendToDevice(registrationTokens, payload)
+                                    .then(function (response) {
+                                        // See the MessagingDevicesResponse reference documentation for
+                                        // the contents of response.
+                                        console.log("Successfully sent message:", response);
+                                    })
+                                    .catch(function (error) {
+                                        console.log("Error sending message:", error);
+                                    });
                                 console.log('new place ok')
                             }
                         })

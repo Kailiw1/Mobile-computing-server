@@ -28,6 +28,32 @@ app.use(session({
 }))
 var port = process.env.PORT || 1337;
 
+
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./my-project-1503314481057-firebase-adminsdk-tq32j-a1583fdc4f.json");
+
+var defaultApp = admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://my-project-1503314481057.firebaseio.com"
+});
+
+
+console.log(defaultApp.name);  // "[DEFAULT]"
+
+// Retrieve services via the defaultApp variable...
+var defaultAuth = defaultApp.auth();
+var defaultDatabase = defaultApp.database();
+//
+//
+
+// These registration tokens come from the client FCM SDKs.
+var registrationTokens = [];
+
+
+
+
+
 app.get('/', function (req, res) {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("Hello World??");
@@ -51,17 +77,14 @@ app.post('/login', function (req, res) {
 
     dbop.login(user, function (records) {
         if (!records.length) {
-            res.send({
-                login: 'wrong'
-            })
+            res.send({ login: 'wrong' })
         }
         else {
             req.session.user = user
-            res.send({
-                login: 'ok'
-            })
+            registrationTokens.push(req.body.token)
+            res.send({ login: 'ok' })
+            console.log("tokens", registrationTokens)
         }
-
     })
 })
 
@@ -111,6 +134,32 @@ app.post('/checkin', function (req, res) {
                     if (!records.length)
                         res.send({ checkin: 'new place failed' })
                     else {
+                        console.log('push message')
+                        // See the "Defining the message payload" section below for details
+                        // on how to define a message payload.
+                        // var payload = {
+                        //     data: {
+                        //         lat: checkin.lat,
+                        //         lng: checkin.lng
+                        //     }
+                        // };
+                        var payload = {
+                            data: {
+                              score: "850",
+                              time: "2:45"
+                            }
+                          };
+                        // Send a message to the devices corresponding to the provided
+                        // registration tokens.
+                        admin.messaging().sendToDevice(registrationTokens, payload)
+                            .then(function (response) {
+                                // See the MessagingDevicesResponse reference documentation for
+                                // the contents of response.
+                                console.log("Successfully sent message:", response);
+                            })
+                            .catch(function (error) {
+                                console.log("Error sending message:", error);
+                            });
                         res.send({ checkin: 'new place ok' })
                     }
                 })
