@@ -26,7 +26,7 @@ ref.on("child_added", function (snapshot) {
     console.log("The read failed: " + errorObject.code);
 });
 // These registration tokens come from the client FCM SDKs.
-var registrationTokens = [];
+var registrationTokens = []; 
 
 
 // Send a message to the devices corresponding to the provided
