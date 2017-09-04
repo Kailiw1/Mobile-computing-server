@@ -3,8 +3,7 @@ var dbop = new db()
 var fs = require('fs');
 var http = require('http');
 var request = require('request');
-
-var qs = require('querystring');
+var querystring = require('querystring');
 
 /**
  * -37.517560   -  -38.426668
@@ -12,37 +11,7 @@ var qs = require('querystring');
  * 
  * 144.594326    145.506191
  */
-
-/** 
- * register users
- *  
- * */
-
-// var obj = [];
-// var i = 1
-// while (i < 5000) {
-//     obj.push({ username: "test" + i, password: "test" + i, email: "test" + i + "@hotmail.com" });
-//     i += 1
-// }
-
-
-// var json = JSON.stringify(obj);
-
-// fs.writeFile('users.json', json, 'utf8', function (err, data) {
-//     console.log(data)
-// });
-
-
-/**                                                                     
- * 
- */
-// fs.readFile('users.json', 'utf8', function readFileCallback(err, data) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         obj = JSON.parse(data); //now it an object
-
-//         var i = 0, howManyTimes = 1000;
+// var i = 0, howManyTimes = 1000;
 //         function f() {
 //             var element = obj[i]
 //             element.status = Date.now()
@@ -62,48 +31,11 @@ var qs = require('querystring');
 //         }
 //         f();
 
-//     }
-// });
-
-
-
-// function randomcheckin(checkin) {
-//     checkin.user = { username: 'robot', password: 'robot' }
-//     checkin.status = Date.now()
-
-//     dbop.checkplace(checkin, function (records) {
-//         if (!records.length)
-//             dbop.checkin_newplace(checkin, function (records) {
-//                 if (!records.length)
-//                     res.send({ checkin: 'new place failed' })
-//                 else {
-//                     res.send({ checkin: 'new place ok' })
-//                 }
-//             })
-//         else {
-//             dbop.checkin(checkin, function (records) {
-//                 if (!records.length)
-//                     res.send({ checkin: 'checkin place failed' })
-//                 else {
-//                     res.send({ checkin: 'checkin place ok' })
-//                 }
-//             })
-//         }
-
-//     })
-
-//     i++;
-//     if (i < howManyTimes) {
-//         setTimeout(randomcheckin, 30);
-//     }
-// }
-
-// randomcheckin();
 
 var lat = (Math.random() * (-38.426668 - -37.517560) + -37.517560)
 var lng = (Math.random() * (145.506191 - 144.594326) + 144.594326)
 var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lat + ", " + lng + "&rankby=distance&key=AIzaSyAeMJIpr7CVFQ7hPXnlr-p80bEhNcg5VIs";
-
+headers = { 'Cookie': 'connect.sid=s%3A0UZBGBbHfhZQN_qXXL3LgaKNL0aQdiFJ.%2FrMVWkvU8P5b1txoh6iaatxpdu6QwIjr45w%2BDVDiJ4g; Path=/; HttpOnly' }
 console.log(lat, lng)
 request.post(
     url,
@@ -115,63 +47,7 @@ request.post(
                 var place = JSON.parse(body).results[0]
                 // console.log(place.name, place.geometry.location, place.vicinity, '\n')
 
-                var checkin = {
-                    name: place.name,
-                    lat: place.geometry.location.lat,
-                    lng: place.geometry.location.lng,
-                    vicinity: place.vicinity
-                }
-                checkin.username = 'robot'
-                checkin.time = Date.now()
-
-                console.log(checkin.name)
-
-                dbop.checkplace(checkin, function (records) {
-                    if (!records.length)
-                        dbop.checkin_newplace(checkin, function (records) {
-                            if (!records.length)
-                                console.log('new place failed')
-                            else {
-                                console.log('push message')
-                                // See the "Defining the message payload" section below for details
-                                // on how to define a message payload.
-                                // var payload = {
-                                //     data: {
-                                //         lat: checkin.lat,
-                                //         lng: checkin.lng
-                                //     }
-                                // };
-                                var payload = {
-                                    data: {
-                                        score: "850",
-                                        time: "2:45"
-                                    }
-                                };
-                                // Send a message to the devices corresponding to the provided
-                                // registration tokens.
-                                admin.messaging().sendToDevice(registrationTokens, payload)
-                                    .then(function (response) {
-                                        // See the MessagingDevicesResponse reference documentation for
-                                        // the contents of response.
-                                        console.log("Successfully sent message:", response);
-                                    })
-                                    .catch(function (error) {
-                                        console.log("Error sending message:", error);
-                                    });
-                                console.log('new place ok')
-                            }
-                        })
-                    else {
-                        dbop.checkin(checkin, function (records) {
-                            if (!records.length)
-                                console.log('checkin place failed')
-                            else {
-                                console.log('checkin place ok')
-                            }
-                        })
-                    }
-
-                })
+                checkin(place)
 
             } else {
                 console.log('no place found')
@@ -184,6 +60,70 @@ request.post(
     }
 );
 
+var checkin = function (place) {
+    var checkin = {
+        name: place.name,
+        lat: place.geometry.location.lat,
+        lng: place.geometry.location.lng,
+        vicinity: place.vicinity
+    }
+
+    console.log(checkin)
+    // var data = querystring.stringify(checkin);
+    // request({
+    //     headers: {
+    //         'Cookie': 'connect.sid=s%3A0UZBGBbHfhZQN_qXXL3LgaKNL0aQdiFJ.%2FrMVWkvU8P5b1txoh6iaatxpdu6QwIjr45w%2BDVDiJ4g; Path=/; HttpOnly'
+    //     },
+    //     uri: 'http://192.168.1.5:1337/checkin',
+    //     body: checkin,
+    //     method: 'POST'
+    // }, function (err, res, body) {
+    //     console.log(body)
+    // });
+
+    request.post({
+        url: 'http://192.168.1.5:1337/checkin',
+        headers: {
+            'Cookie': 'connect.sid=s%3A0UZBGBbHfhZQN_qXXL3LgaKNL0aQdiFJ.%2FrMVWkvU8P5b1txoh6iaatxpdu6QwIjr45w%2BDVDiJ4g; Path=/; HttpOnly'
+        },
+        form: {
+            name: place.name,
+            lat: place.geometry.location.lat,
+            lng: place.geometry.location.lng,
+            vicinity: place.vicinity
+        },
+        method: 'POST'
+    },
+
+
+
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log(body)
+
+            } else {
+                console.log("error -- " + error)
+            }
+        }
+    );
+}
+// username: robot password: robot
+//'connect.sid=s%3A0UZBGBbHfhZQN_qXXL3LgaKNL0aQdiFJ.%2FrMVWkvU8P5b1txoh6iaatxpdu6QwIjr45w%2BDVDiJ4g; Path=/; HttpOnly'
+// request.post(
+//     'http://192.168.1.5:1337/login',
+//     { json: { username: 'robot', password: 'robot' } },
+//     function (error, response, body) {
+//         if (!error && response.statusCode == 200) {
+//             console.log(response.headers['set-cookie'])
+//             // var user = JSON.parse(body)
+//             // console.log(user)
+//             // console.log(place.name, place.geometry.location, place.vicinity, '\n')
+
+//         } else {
+//             console.log("error -- " + error)
+//         }
+//     }
+// );
 
 // var element = {
 //     username: 'robot',

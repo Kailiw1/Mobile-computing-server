@@ -34,8 +34,8 @@ var admin = require("firebase-admin");
 var serviceAccount = require("./my-project-1503314481057-firebase-adminsdk-tq32j-a1583fdc4f.json");
 
 var defaultApp = admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://my-project-1503314481057.firebaseio.com"
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://my-project-1503314481057.firebaseio.com"
 });
 
 
@@ -81,13 +81,17 @@ app.post('/login', function (req, res) {
         }
         else {
             req.session.user = user
-            registrationTokens.push(req.body.token)
             res.send({ login: 'ok' })
-            console.log("tokens", registrationTokens)
+            if (req.body.token)
+                registrationTokens.push(req.body.token)
+
+
         }
     })
 })
-
+app.post('/new_user',function(req,res){
+    
+})
 app.post('/register', function (req, res) {
     var user = req.body
     user.status = Date.now()
@@ -145,10 +149,10 @@ app.post('/checkin', function (req, res) {
                         // };
                         var payload = {
                             data: {
-                              score: "850",
-                              time: "2:45"
+                                score: "850",
+                                time: "2:45"
                             }
-                          };
+                        };
                         // Send a message to the devices corresponding to the provided
                         // registration tokens.
                         admin.messaging().sendToDevice(registrationTokens, payload)
