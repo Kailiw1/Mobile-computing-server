@@ -9,6 +9,7 @@
         "body-parser": "^*",
         "connect-redis": "^*",
         "cookie-parser": "^*",
+        "cron": "^1.2.1",
         "express": "^4.15.4",
         "express-session": "^*",
         "firebase-admin": "^5.2.1",

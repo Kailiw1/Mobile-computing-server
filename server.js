@@ -1,5 +1,8 @@
 var admin = require("firebase-admin");
 
+var CronJob = require('cron').CronJob;
+
+
 var serviceAccount = require("./my-project-1503314481057-firebase-adminsdk-tq32j-a1583fdc4f.json");
 
 var defaultApp = admin.initializeApp({
@@ -24,7 +27,7 @@ ref.on("child_added", function (snapshot) {
     // console.log(snapshot.key)
     console.log('check-in ', snapshot.val().time)
 
-    var postKey = writeNewPost(snapshot.val().place.lat, snapshot.val().place.lng, new Date(snapshot.val().time).getTime())
+    var postKey = writeNewPost(snapshot.val().place.lat, snapshot.val().place.lng, snapshot.val().time)
 
     setTimeout(function () {
         console.log('The ' + postKey + ' has been removed. ')
@@ -48,26 +51,42 @@ var registrationTokens = [];
 //     .catch(function (error) {
 //         console.log("Error sending message:", error);
 //     });
-<<<<<<< HEAD
-=======
 function writeNewPost(lat, lng, time) {
     // A post entry.
-    var postData = {
+    var currentpostData = {
         lat: lat,
         lng: lng,
-        time: time
+        time: Date.now()
+    };
+    var todayspostData = {
+        lat: lat,
+        lng: lng,
+        time: Date.now() - new Date(new Date().toDateString())
     };
 
     // Get a key for a new Post.
-    var newPostKey = defaultDatabase.ref().child('current_check-in').push().key;
+    var currentPostKey = defaultDatabase.ref().child('current_check-in').push().key;
+    var todayPostKey = defaultDatabase.ref().child('todays_check-in').push().key;
 
-    // Write the new post's data simultaneously in the posts list and the user's post list.
     var updates = {};
-    updates['/current_check-in/' + newPostKey] = postData;
-
+    updates['/current_check-in/' + currentPostKey] = currentpostData;
+    updates['/todays_check-in/' + todayPostKey] = todayspostData;
     defaultDatabase.ref().update(updates)
 
-    return newPostKey;
+    return currentPostKey;
 }
->>>>>>> 675f7426b5a88d38349d584f0370d5d1664ff2d7
 
+var job = new CronJob('00 00 00 * * *', function () {
+    /*
+     * Runs every day
+     * at 00:00:00 AM. 
+     */
+    // DO SOMETHING
+    var queryRef = defaultDatabase.ref().child('todays_check-in')
+    queryRef.remove()
+}, function () {
+    /* This function is executed when the job stops */
+    console.log('stop.')
+},
+    true /* Start the job right now */
+);
