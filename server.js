@@ -17,16 +17,24 @@ var defaultDatabase = defaultApp.database();
 //
 
 var ref = defaultDatabase.ref("check-in");
+var queryRef = defaultDatabase.ref().child('current_check-in')
 
 // Attach an asynchronous callback to read the data at our posts reference
 ref.on("child_added", function (snapshot) {
-    console.log(snapshot.key)
-    // console.log(snapshot.val());
+    // console.log(snapshot.key)
+    console.log('check-in ', snapshot.val().time)
+
+    var postKey = writeNewPost(snapshot.val().place.lat, snapshot.val().place.lng, new Date(snapshot.val().time).getTime())
+
+    setTimeout(function () {
+        console.log('The ' + postKey + ' has been removed. ')
+        queryRef.child(postKey).remove()
+    }, 5000);
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 // These registration tokens come from the client FCM SDKs.
-var registrationTokens = []; 
+var registrationTokens = [];
 
 
 // Send a message to the devices corresponding to the provided
@@ -40,3 +48,23 @@ var registrationTokens = [];
 //     .catch(function (error) {
 //         console.log("Error sending message:", error);
 //     });
+function writeNewPost(lat, lng, time) {
+    // A post entry.
+    var postData = {
+        lat: lat,
+        lng: lng,
+        time: time
+    };
+
+    // Get a key for a new Post.
+    var newPostKey = defaultDatabase.ref().child('current_check-in').push().key;
+
+    // Write the new post's data simultaneously in the posts list and the user's post list.
+    var updates = {};
+    updates['/current_check-in/' + newPostKey] = postData;
+
+    defaultDatabase.ref().update(updates)
+
+    return newPostKey;
+}
+
