@@ -6,6 +6,7 @@
     "license": "daryldaryl",
     "author": "daryldaryl",
     "dependencies": {
+        "async": "^2.5.0",
         "body-parser": "^*",
         "connect-redis": "^*",
         "cookie-parser": "^*",
@@ -14,7 +15,8 @@
         "express-session": "^*",
         "firebase-admin": "^5.2.1",
         "neo4j-driver": "^*",
-        "request": "^2.81.0"
+        "request": "^2.81.0",
+        "tedious": "^2.0.0"
     },
     "engines": {
         "node": ">=6.11.0"

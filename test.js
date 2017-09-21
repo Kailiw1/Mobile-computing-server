@@ -1,25 +1,47 @@
-// var admin = require("firebase-admin");
+var Connection = require('tedious').Connection;
+var Request = require('tedious').Request;
 
-// var serviceAccount = require("./my-project-1503314481057-firebase-adminsdk-tq32j-a1583fdc4f.json");
+// Create connection to database
+var config =
+    {
+        userName: 'daryl',
+        password: 'Helloccc9090',
+        server: 'daryldaryl.database.windows.net',
+        options:
+        {
+            database: 'mobile_db',
+            encrypt: true
+        }
+    }
+var connection = new Connection(config);
 
-// var defaultApp = admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//     databaseURL: "https://my-project-1503314481057.firebaseio.com"
-// });
+// Attempt to connect and execute queries if connection goes through
+connection.on('connect', function (err) {
+    if (err) {
+        console.log(err)
+    }
+    else {
+        queryDatabase()
+    }
+}
+);
 
+function queryDatabase() {
+    console.log('Reading rows from the Table...');
 
-// console.log(defaultApp.name);  // "[DEFAULT]"
+    // Read all rows from table
+    request = new Request(
+        "show tables",
+        function (err, rowCount, rows) {
+            console.log(rowCount + ' row(s) returned');
+            process.exit();
+        }
+    );
 
-// // Retrieve services via the defaultApp variable...
-// var defaultAuth = defaultApp.auth();
-// var defaultDatabase = defaultApp.database();
-// //
-
-// // "b\uf8ff"
-// var reff = defaultDatabase.ref("check-in").orderByChild('time');
-// reff.startAt("2017-09-05 00").endAt("2017-09-05 00\uf8ff").on("value", function (snapshot) {
-//     console.log(snapshot.val());
-// });
-console.log(new Date().toDateString())
-console.log(new Date('Tue Sep 05 2017'))
-console.log(new Date('Tue Sep 05 2017').getTime())
+    request.on('row', function (columns) {
+        columns.forEach(function (column) {
+            console.log("%s\t%s", column.metadata.colName, column.value);
+        });
+    });
+    connection.execSql(request);
+}
