@@ -1,34 +1,35 @@
-var CronJob = require('cron').CronJob;
 var jwt = require('jsonwebtoken');
 
-var job = new CronJob('00 00 00 * * *', function () {
-    /*
-     * Runs every day
-     * at 00:00:00 AM. 
-     */
-    // DO SOMETHING
-
-}, function () {
-    /* This function is executed when the job stops */
-    console.log('stop.')
-},
-    true /* Start the job right now */
-);
 
 
-var secret = 'daryldaryl'
-// sign with default (HMAC SHA256)
+// var secret = 'daryldaryl'
+// // sign with default (HMAC SHA256)
+
+// var token = jwt.sign({
+//     data: {username:'daryl'}
+// }, secret, { expiresIn: '100 days' });
+
+// console.log(token)
+
+// // verify a token symmetric
+// jwt.verify(token, secret, function (err, decoded) {
+//     if(err){
+//         console.log(err.name) 
+//         console.log(err.message) 
+//     }else{
+//         console.log(decoded) 
+//     }
+
+// });
 
 
+var s = 'aa_cc'
+if (/^[a-z0-9_]+$/i.test(s)) {
+    console.log('success')
+} else {
+    console.log('failed')
+}
+console.log('index of space ', s.indexOf(' '))
 
-console.log(token)
-
-// verify a token symmetric
-jwt.verify(token, secret, function (err, decoded) {
-    if(err){
-
-    }else{
-        console.log(decoded) // bar
-    }
-   
-});
+s = s.replace(' ', '')
+console.log(s)
