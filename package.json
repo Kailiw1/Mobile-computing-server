@@ -13,7 +13,7 @@
         "cron": "^1.2.1",
         "express": "^4.15.4",
         "express-session": "^*",
-        "firebase-admin": "^5.2.1",
+        "jsonwebtoken": "^8.0.1",
         "neo4j-driver": "^*",
         "request": "^2.81.0",
         "tedious": "^2.0.0"

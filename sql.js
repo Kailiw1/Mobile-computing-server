@@ -77,7 +77,6 @@ function Query() {
             });
             tmp.push(row)
         });
-        console.log(request)
         connection.execSql(request);
 
     }
